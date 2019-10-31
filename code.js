@@ -75,8 +75,6 @@ $(function(){
 	// Set the canvas coordinates up so that the origin is in the center of the viewport
 	ctx.translate(gWidth/2,gHeight/2);
 
-	DummyExample();
-
 	// This draws once.
 	AnimationFrame();
 
