@@ -78,7 +78,7 @@ $(function(){
 	DummyExample();
 
 	// This draws once.
-	// AnimationFrame();
+	AnimationFrame();
 
 
 
