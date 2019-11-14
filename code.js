@@ -41,8 +41,8 @@ $(function(){
 	})
 
 	// The check box
-	gMyCheckbox = $("#changeit").val()
-	$("#changeit").change(function(){
+	gMyCheckbox = $("#checkbox1").is(":checked");
+	$("#checkbox1").change(function(){
 		gMyCheckbox = $(this).is(":checked");
 		console.log("checkbox is now",gMyCheckbox);
 	})
@@ -74,6 +74,8 @@ $(function(){
 
 	// Set the canvas coordinates up so that the origin is in the center of the viewport
 	ctx.translate(gWidth/2,gHeight/2);
+
+	DummyExample();
 
 	// This draws once.
 	AnimationFrame();
@@ -122,13 +124,16 @@ function Draw()
 
 	// Note that in this projection, x is RIGHT, y is DOWN (not up!) 
 	DrawBox(50,50, gBoxSize);
+
+	if(gMyCheckbox) DrawBox(-100,-100,gBoxSize/2);
 }
+
 
 function Clear()
 {
 	// Clears the viewport.
 	ctx.fillStyle="white"; 
-	ctx.fillRect(0,0,gWidth,gHeight);
+	ctx.fillRect(-gWidth/2, -gHeight/2, gWidth, gHeight);  // from xy to deltax, deltay
 }
 
 function DrawBox(x,y,size)
@@ -137,14 +142,23 @@ function DrawBox(x,y,size)
 	ctx.strokeStyle = "red";  
 	ctx.lineWidth = 2;  // thickish lines
 
-	ctx.beginPath();  // We want to draw a line.
-	ctx.moveTo(x,y);  // start at a corner
-	ctx.lineTo(x+size,y);  // draw a line to the second corner
-	ctx.lineTo(x+size,y+size);
-	ctx.lineTo(x,y+size);
-	ctx.lineTo(x,y);       // Draw a line back to the start corner
-	ctx.stroke(); // Draw the line
+	var x1 = x;
+	var y1 = y;
+	var x2 = x+size;
+	var y2 = y+size;
 
+	// FIRST EXERCISE:
+	// Modify the coordinates above so that they are rotated by 15 degrees to draw the box
+
+	ctx.beginPath();  // We want to draw a line.
+	ctx.moveTo(x1,y1);  // start at a corner upper left hand cornner
+	ctx.lineTo(x2,y);  // draw a line to the right
+	ctx.lineTo(x2,y2); //  draw a line down
+	ctx.lineTo(x1,y2); // draw a line left
+	ctx.lineTo(x1,y1);       // Draw a line up and back to the start corner
+	ctx.stroke(); // actually draw the line on the screen as a red line of thickness 2
+
+	// This code fills the box green if ctl2 is being held down with the mouse.
 	ctx.fillStyle = "green";
 	if(gCtl2) ctx.fill();
 }
