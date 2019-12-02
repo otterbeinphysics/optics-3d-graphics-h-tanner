@@ -74,7 +74,7 @@ $(function(){
 
 	// Set the canvas coordinates up so that the origin is in the center of the viewport
 	ctx.translate(gWidth/2,gHeight/2);
-
+	//the coord system is +x to the right and +y is down (computer paints top to bottom)
 	DummyExample();
 
 	// This draws once.
@@ -96,7 +96,7 @@ function SetTime()
 function AnimationFrame()
 {
 	// This routine gets called every time a new frame happens.
-
+	//not particularly important, it's just for the frame rate thing to make sure it doesn't stutter too bad
 	//	Some utility code in case you want to make animations:
 	const max_dt = 50;
 	var now = Date.now();
@@ -118,13 +118,15 @@ function AnimationFrame()
 
 function Draw()
 {
-
+	//does this everytime! Basically refreshes as all white
 	// Here's where you will draw things!
 	Clear(); // Clear the viewport; code below.
 
 	// Note that in this projection, x is RIGHT, y is DOWN (not up!) 
-	DrawBox(50,50, gBoxSize);
-
+	//changed 0,0 to 50,50, though I may have changed it earlier
+	//add theta as a parameter for when you make it spin
+	DrawBox(0,0, gBoxSize, );
+	//not here though
 	if(gMyCheckbox) DrawBox(-100,-100,gBoxSize/2);
 }
 
@@ -132,7 +134,8 @@ function Draw()
 function Clear()
 {
 	// Clears the viewport.
-	ctx.fillStyle="white"; 
+	//--if you change what's in the "" for fillStyle, maybe make it a grid? css 
+	ctx.fillStyle= "white";
 	ctx.fillRect(-gWidth/2, -gHeight/2, gWidth, gHeight);  // from xy to deltax, deltay
 }
 
@@ -141,23 +144,112 @@ function DrawBox(x,y,size)
 	// Sample code to show some simple draw commands in 2d
 	ctx.strokeStyle = "red";  
 	ctx.lineWidth = 2;  // thickish lines
-
+	
+	//size is the amount that you shift over to the next point?
+	/*
+	var x1 = x ;
+	var y1 = y ;
+	var x2 = x+size ;
+	var y2 = y+size ;
+	*/
+	//***** actually, let's try to translate it first
+	
+	/*
+	var trans_x = 30;
+	var trans_y = 30;
+	
+	var x1 = x +trans_x;
+	var y1 = y +trans_y;
+	var x2 = x+size +trans_x;
+	var y2 = y+size +trans_y;
+	
+	//****** trans_x shifts the top left corner either left or right, trans_y shifts it either up or down
+	*/
+	//-----let's make the box move by 15 degrees!
+	
+	
+	
+	//the rotation angle theta
+	
+	var deg = 133;
+	var my_theta = ((Math.PI)*(deg))/(180);
+	//console.log(my_theta);
+	var cos = Math.cos(my_theta);
+	var sin = Math.sin(my_theta);
+	console.log(" cos =", cos);
+	console.log(" sin =", sin);
+	
+	//prev was x: +,- ... y:+,+..
+	//var rot_size = size * (Math.sqrt(2))/(2);
 	var x1 = x;
 	var y1 = y;
-	var x2 = x+size;
-	var y2 = y+size;
+	/*
+	var x_plus = x1 + size;
+	var y_plus = y1 + size;
+	
+	//var rot_x1 = x1*cos + y1*sin ;//+rot_size;
+	//var rot_y1 = -x1*sin + y1*cos ;//+rot_size;
+	//var rot_x2 = rot_x1 +size;
+	//var rot_y2 = rot_y1 +size;
+	var x2 = x_plus;
+	//var x2 = x_plus*cos + y_plus*sin;
+	var y2 = -x_plus*sin + y_plus*cos ;;
 
+	var x3 = x_plus*cos + y_plus*sin
+	var y3 = -x_plus*sin + y_plus*cos;
+	
+	var x4 = x_plus*cos + y_plus*sin;
+	var y4 = -x_plus*sin + y_plus*cos;
+	*/
+	
+	var x2 = x1 + size;
+	var y2 = y1;
+	
+	var x3 = x2;
+	var y3 = y1 + size;
+	
+	var x4 = x1;
+	var y4 = y3;
+	/*
+	var rot_x1 = x1*cos + y1*sin;
+	var rot_y1 = -x1*sin + y1*cos;
+	*/
+	var rot_x1 = x1;
+	var rot_y1 = y1;
+	
+	var rot_x2 = x2*cos + y2*sin;
+	var rot_y2 = -x2*sin + y2*cos;
+	
+	var rot_x3 = x3*cos + y3*sin;
+	var rot_y3 = -x3*sin + y3*cos;
+	
+	var rot_x4 = x4*cos + y4*sin;
+	var rot_y4 = -x4*sin + y4*cos;
+	
+	//var rot_y1 = -x1*sin + y1*cos;
+	//var rot_x2 = x2*cos + y2*sin + rot_size;
+	//var rot_y2 = -x2*sin + y2*cos +rot_size;
+	
 	// FIRST EXERCISE:
 	// Modify the coordinates above so that they are rotated by 15 degrees to draw the box
-
+	/*
 	ctx.beginPath();  // We want to draw a line.
 	ctx.moveTo(x1,y1);  // start at a corner upper left hand cornner
-	ctx.lineTo(x2,y);  // draw a line to the right
+	ctx.lineTo(x2,y1);  // draw a line to the right
 	ctx.lineTo(x2,y2); //  draw a line down
 	ctx.lineTo(x1,y2); // draw a line left
 	ctx.lineTo(x1,y1);       // Draw a line up and back to the start corner
+	ctx.stroke(); // actually draw the line on the screen as a red line of thickness 
+	*/
+	
+	ctx.beginPath();  // We want to draw a line.
+	ctx.moveTo(rot_x1,rot_y1);  // start at a corner upper left hand cornner
+	ctx.lineTo(rot_x2,rot_y2);  // draw a line to the right
+	ctx.lineTo(rot_x3,rot_y3); //  draw a line down
+	ctx.lineTo(rot_x4,rot_y4); // draw a line left
+	ctx.lineTo(rot_x1,rot_y1);       // Draw a line up and back to the start corner
 	ctx.stroke(); // actually draw the line on the screen as a red line of thickness 2
-
+	
 	// This code fills the box green if ctl2 is being held down with the mouse.
 	ctx.fillStyle = "green";
 	if(gCtl2) ctx.fill();

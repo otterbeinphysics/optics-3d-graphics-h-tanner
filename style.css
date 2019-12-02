@@ -1,11 +1,17 @@
 /*This file controls how certain things look on the screen outside your viewport. You shouldn't need to mess with it.*/
 
 #viewport {
-	height: 800px;
+	height: 400px;
+	width: 400px;
 	border: 2px solid black;
 	margin:2px;
-}
 
+}
+/* code from the internet  above 
+	background-image:
+	    linear-gradient(to right, black 1px, transparent 1px),
+	    linear-gradient(to bottom, black 1px, transparent 1px);
+*/
 .myclickable {
 	cursor: pointer;
 	border-radius: 25px;
