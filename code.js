@@ -125,7 +125,11 @@ function Draw()
 	// Note that in this projection, x is RIGHT, y is DOWN (not up!) 
 	//changed 0,0 to 50,50, though I may have changed it earlier
 	//add theta as a parameter for when you make it spin
-	DrawBox(0,0, gBoxSize, );
+	
+	//theta spin
+	//var deg = 133;
+	//var my_theta = gT*((Math.PI)*(deg))/(180);
+	DrawBox(0,0, gBoxSize, (Math.PI/180*0.1*gT));
 	//not here though
 	if(gMyCheckbox) DrawBox(-100,-100,gBoxSize/2);
 }
@@ -139,7 +143,25 @@ function Clear()
 	ctx.fillRect(-gWidth/2, -gHeight/2, gWidth, gHeight);  // from xy to deltax, deltay
 }
 
-function DrawBox(x,y,size)
+	/*
+	function Project(p)
+	{
+	var xy = vec2(0.0);
+	xy[0] = p.x()/p.z()+eye_distance)*screen_distance;
+	xy[1] = p.x()/p.z()+eye_distance)*screen_distance;
+	return xy;
+	}
+
+	made a a part of the thing earlier
+	DrawCube(a) {
+	var p1 = vec3(-a,-a,-a); var xy1 = Project(vec3(-a,-a,-a));
+	2 -,+,- 3 +,+,-, 4 +,-,-, 5 -,-,+ 6 -,+,+ 7 +,+,+ 8 +,-,+
+	}
+	*/
+
+	
+
+function DrawBox(x,y,size,my_theta)
 {
 	// Sample code to show some simple draw commands in 2d
 	ctx.strokeStyle = "red";  
@@ -172,7 +194,7 @@ function DrawBox(x,y,size)
 	//the rotation angle theta
 	
 	var deg = 133;
-	var my_theta = ((Math.PI)*(deg))/(180);
+	// var my_theta = 0.0001*gT*((Math.PI)*(deg))/(180);
 	//console.log(my_theta);
 	var cos = Math.cos(my_theta);
 	var sin = Math.sin(my_theta);
