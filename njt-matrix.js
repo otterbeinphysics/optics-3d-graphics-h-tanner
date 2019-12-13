@@ -153,7 +153,7 @@ class matrix2 extends Array {
   
   mult(b) {
  	if(b instanceof matrix2) {
- 		return multiply_square_matrices(this,b,mat2());
+ 		return multiply_square_matricies(this,b,mat2());
  	}
  	else if(b instanceof vector2) {
 		return multiply_square_matrix_times_vector(this,b, new vector2());
@@ -209,7 +209,7 @@ class matrix4 extends Array {
   
   mult(b) {
  	if(b instanceof matrix4) {
- 		return multiply_square_matrices(this,b,new matrix4());
+ 		return multiply_square_matricies(this,b,mat4());
  	}
  	else if(b instanceof vector4) {
 		return multiply_square_matrix_times_vector(this,b, new vector4());
@@ -234,4 +234,3 @@ function test()
 	console.log("d",d);
 	console.log("M times d",M.mult(d));
 }
-

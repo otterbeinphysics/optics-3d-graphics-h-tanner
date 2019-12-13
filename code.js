@@ -16,6 +16,9 @@ var gCtl2
 
 var gContinuousRedraw = true;
 
+//*********************slider thing added
+var x_slider = 0;
+
 $(function(){
 	// Code in this block is executated when the page first loads.
 
@@ -51,7 +54,13 @@ $(function(){
 	$("#ctl1").click(function(){
 		console.log("ctl1 was clicked");
 	});
-
+	
+	//slidey nonsense
+	var x_slider = $("#x_control").val();
+	var y_slider = $("#y_control").val();
+	var z_slider = $("#z_control").val();
+	
+	
 	// The holdable box
 	gCtl2 = false;
 	$("#ctl2").mousedown(function(){
@@ -127,11 +136,25 @@ function Draw()
 	//add theta as a parameter for when you make it spin
 	
 	//theta spin
+	//*****may need to comment these two lines out again, trying to make cube spin
 	//var deg = 133;
 	//var my_theta = gT*((Math.PI)*(deg))/(180);
-	DrawBox(0,0, gBoxSize, (Math.PI/180*0.1*gT));
+	
+	screen_d = 400*gBoxSize/100;
+	eye_d = 800*gBoxSize/100;
+	
+	//DrawBox(0,0, gBoxSize, (Math.PI/180*0.1*gT));
 	//not here though
+	
+	DrawCube(100, (Math.PI/180*0.1*gT));
+	DrawCube(50, (Math.PI/180*0.01*gT));
+	DrawCube(150, (Math.PI/180*0.15*gT));
+	DrawCube(200, (Math.PI/180*0.2*gT));
+	
+	
 	if(gMyCheckbox) DrawBox(-100,-100,gBoxSize/2);
+	
+	//slider(x_control, y_control, z_control,0);
 }
 
 
@@ -143,21 +166,121 @@ function Clear()
 	ctx.fillRect(-gWidth/2, -gHeight/2, gWidth, gHeight);  // from xy to deltax, deltay
 }
 
-	/*
-	function Project(p)
-	{
+//var screen_d = 400;
+//var eye_d = 100;
+	
+function Project(p)
+{
 	var xy = vec2(0.0);
-	xy[0] = p.x()/p.z()+eye_distance)*screen_distance;
-	xy[1] = p.x()/p.z()+eye_distance)*screen_distance;
+	xy[0] = p.x()/(p.z()+eye_d)*screen_d;
+	xy[1] = p.x()/(p.z()+eye_d)*screen_d;
 	return xy;
-	}
+}
 
-	made a a part of the thing earlier
-	DrawCube(a) {
-	var p1 = vec3(-a,-a,-a); var xy1 = Project(vec3(-a,-a,-a));
-	2 -,+,- 3 +,+,-, 4 +,-,-, 5 -,-,+ 6 -,+,+ 7 +,+,+ 8 +,-,+
+function Moveto3D(p)
+{
+	var x = p.x()/(p.z()+eye_d)*screen_d;
+	var y = p.y()/(p.z()+eye_d)*screen_d;
+	ctx.moveTo(x,y);
+}
+
+function LineIn3D(p)
+{
+	var x = p.x()/(p.z()+eye_d)*screen_d;
+	var y = p.y()/(p.z()+eye_d)*screen_d;
+	ctx.lineTo(x,y);
+}
+
+	//made a a part of the thing earlier
+
+function DrawCube(a, my_theta) 
+{
+
+	ctx.strokeStyle = "black";
+	ctx.lineWidth = 2;
+	
+	var deg = 133;
+	
+	var cos = Math.cos(my_theta);
+	var sin = Math.sin(my_theta);
+	
+	var p1 = vec4(-a,-a,-a,0);           
+	var p2 = vec4(-a,+a,-a,0);           
+	var p3 = vec4(+a,+a,-a,0);           
+	var p4 = vec4(+a,-a,-a,0);           
+	var p5 = vec4(-a,-a,+a,0);           
+	var p6 = vec4(-a,+a,+a,0);           
+	var p7 = vec4(+a,+a,+a,0);           
+	var p8 = vec4(+a,-a,+a,0);  
+	
+	var rot3D_x = mat4(	[1,		0,		0,		0],
+						[0,		cos,	-sin,	0],
+						[0,		sin,	cos,	0],
+						[0,		0,		0,		1]);
+				
+	var rot3D_y = mat4(	[cos,	0,		sin,	0],
+						[0,		1,		0,		0],
+						[-sin,	0,		cos,	0],
+						[0,		0,		0,		1]);
+	    	
+	var rot3D_z = mat4 ([cos,	-sin,	0,		0],
+						[sin,	cos,	0,		0],
+						[0,		0,		1,		0],
+						[0,		0,		0,		1]);	
+						
+						
+	
+		function slider()	{
+			x_slider = $("#x_control").val();
+			y_slider = $("#y_control").val();
+			z_slider = $("#z_control").val();
+			return mat4([Math.cos(x_slider*my_theta/100),	0,									0,									0],
+						[0,									Math.cos(y_slider*my_theta/100),	0,									0],
+						[0,									0,									Math.cos(z_slider*my_theta/100),	0],
+						[0,									0,									0,									1]);
+		}
+	
+	
+	
+	var rot_3D = ((rot3D_x.mult(rot3D_y)).mult(rot3D_z));
+	//console.log("rot3d transformed");
+	var rot_3D = rot_3D.mult(slider());
+	//console.log("added slider");
+	//var rot_3D = rot_3D.mult(rot3D_z);
+	
+	
+	var rot_p1 = rot_3D.mult(p1);
+	var rot_p2 = rot_3D.mult(p2);
+	var rot_p3 = rot_3D.mult(p3);
+	var rot_p4 = rot_3D.mult(p4);						
+    var rot_p5 = rot_3D.mult(p5);
+	var rot_p6 = rot_3D.mult(p6);
+	var rot_p7 = rot_3D.mult(p7);
+	var rot_p8 = rot_3D.mult(p8);    
+	console.log("rotated vectors");
+	
+		ctx.beginPath();
+		Moveto3D(rot_p1);
+		LineIn3D(rot_p2);
+		LineIn3D(rot_p3);
+		LineIn3D(rot_p4);
+		LineIn3D(rot_p1);
+		Moveto3D(rot_p5);
+		LineIn3D(rot_p6);
+		LineIn3D(rot_p7);
+		LineIn3D(rot_p8);
+		LineIn3D(rot_p5);
+
+		Moveto3D(rot_p1); LineIn3D(rot_p5);
+		Moveto3D(rot_p2); LineIn3D(rot_p6);
+		Moveto3D(rot_p3); LineIn3D(rot_p7);
+		Moveto3D(rot_p4); LineIn3D(rot_p8);
+		ctx.stroke();
+		
+		
+	
 	}
-	*/
+	
 
 	
 
@@ -194,35 +317,14 @@ function DrawBox(x,y,size,my_theta)
 	//the rotation angle theta
 	
 	var deg = 133;
-	// var my_theta = 0.0001*gT*((Math.PI)*(deg))/(180);
 	//console.log(my_theta);
 	var cos = Math.cos(my_theta);
 	var sin = Math.sin(my_theta);
 	console.log(" cos =", cos);
 	console.log(" sin =", sin);
 	
-	//prev was x: +,- ... y:+,+..
-	//var rot_size = size * (Math.sqrt(2))/(2);
 	var x1 = x;
 	var y1 = y;
-	/*
-	var x_plus = x1 + size;
-	var y_plus = y1 + size;
-	
-	//var rot_x1 = x1*cos + y1*sin ;//+rot_size;
-	//var rot_y1 = -x1*sin + y1*cos ;//+rot_size;
-	//var rot_x2 = rot_x1 +size;
-	//var rot_y2 = rot_y1 +size;
-	var x2 = x_plus;
-	//var x2 = x_plus*cos + y_plus*sin;
-	var y2 = -x_plus*sin + y_plus*cos ;;
-
-	var x3 = x_plus*cos + y_plus*sin
-	var y3 = -x_plus*sin + y_plus*cos;
-	
-	var x4 = x_plus*cos + y_plus*sin;
-	var y4 = -x_plus*sin + y_plus*cos;
-	*/
 	
 	var x2 = x1 + size;
 	var y2 = y1;
@@ -232,10 +334,7 @@ function DrawBox(x,y,size,my_theta)
 	
 	var x4 = x1;
 	var y4 = y3;
-	/*
-	var rot_x1 = x1*cos + y1*sin;
-	var rot_y1 = -x1*sin + y1*cos;
-	*/
+	
 	var rot_x1 = x1;
 	var rot_y1 = y1;
 	
@@ -248,12 +347,27 @@ function DrawBox(x,y,size,my_theta)
 	var rot_x4 = x4*cos + y4*sin;
 	var rot_y4 = -x4*sin + y4*cos;
 	
-	//var rot_y1 = -x1*sin + y1*cos;
-	//var rot_x2 = x2*cos + y2*sin + rot_size;
-	//var rot_y2 = -x2*sin + y2*cos +rot_size;
+	
+	var rot = mat2([Math.cos(my_theta),Math.sin(my_theta)],[-Math.sin(my_theta),Math.cos(my_theta)]);
+	var p1 = vec2(x,y);
+	var p2 = vec2(x+size,y);
+	var p3 = vec2(x+size,y+size);
+	var p4 = vec2(x,y+size);
+
+	var p1r = rot.mult(p1);
+	var p2r = rot.mult(p2);
+	var p3r = rot.mult(p3);
+	var p4r = rot.mult(p4);
+	
+	
+					
+	
+	
 	
 	// FIRST EXERCISE:
 	// Modify the coordinates above so that they are rotated by 15 degrees to draw the box
+	
+	//regular box drawing
 	/*
 	ctx.beginPath();  // We want to draw a line.
 	ctx.moveTo(x1,y1);  // start at a corner upper left hand cornner
@@ -264,12 +378,24 @@ function DrawBox(x,y,size,my_theta)
 	ctx.stroke(); // actually draw the line on the screen as a red line of thickness 
 	*/
 	
+	//this is how I made the box rotate/spin
+	/*
 	ctx.beginPath();  // We want to draw a line.
 	ctx.moveTo(rot_x1,rot_y1);  // start at a corner upper left hand cornner
 	ctx.lineTo(rot_x2,rot_y2);  // draw a line to the right
 	ctx.lineTo(rot_x3,rot_y3); //  draw a line down
 	ctx.lineTo(rot_x4,rot_y4); // draw a line left
 	ctx.lineTo(rot_x1,rot_y1);       // Draw a line up and back to the start corner
+	ctx.stroke(); // actually draw the line on the screen as a red line of thickness 2
+	*/
+	
+	//spinny cube
+	ctx.beginPath();  // We want to draw a line.
+	ctx.moveTo(p1r.x(),p1r.y());  // start at a corner upper left hand cornner
+	ctx.lineTo(p2r.x(),p2r.y());  // draw a line to the right
+	ctx.lineTo(p3r.x(),p3r.y()); //  draw a line down
+	ctx.lineTo(p4r.x(),p4r.y()); // draw a line left
+	ctx.lineTo(p1r.x(),p1r.y());       // Draw a line up and back to the start corner
 	ctx.stroke(); // actually draw the line on the screen as a red line of thickness 2
 	
 	// This code fills the box green if ctl2 is being held down with the mouse.
@@ -289,9 +415,9 @@ function DummyExample()
 	var I = identity3(); // Creates a 3x3 identity matrix
 
 	// Create a 3x3 rotation matrix that rotates about the z-axis by an angle of 45 degrees:
-	var theta = Math.PI/4;  // computers use radians!
-	var R = mat3(       [ Math.cos(theta),  -Math.sin(theta), 0 ],
-						[ Math.sin(theta),   Math.cos(theta), 0 ],
+	var my_theta = Math.PI/4;  // computers use radians!
+	var R = mat3(       [ Math.cos(my_theta),  -Math.sin(my_theta), 0 ],
+						[ Math.sin(my_theta),   Math.cos(my_theta), 0 ],
 						[ 0              ,   0              , 1 ]
 						);
 
